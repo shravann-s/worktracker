@@ -2,7 +2,10 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>WorkTracker - Office, WFH & Leave Planner</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2224%22>🏢</text></svg>">
@@ -36,7 +39,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
           <button id="todayBtn" class="btn btn-outline btn-sm">Today</button>
-          <div class="fy-badge" id="navFyBadge" title="Financial Year cycle">FY 2026-27 (Apr–Mar)</div>
+          <div class="fy-badge" id="navFyBadge" title="Financial Year cycle"><span class="fy-full">FY 2026-27 (Apr–Mar)</span><span class="fy-compact">FY 2026-27</span></div>
         </div>
       </div>
 
@@ -130,13 +133,19 @@
     <div class="main-tabs-bar">
       <nav class="tabs-nav" role="tablist">
         <button class="tab-btn active" data-tab="calendarTab" role="tab" aria-selected="true">
-          <span class="tab-icon">📅</span> Calendar & Logger
+          <span class="tab-icon">📅</span>
+          <span class="tab-text-full">Calendar & Logger</span>
+          <span class="tab-text-mobile">Calendar</span>
         </button>
         <button class="tab-btn" data-tab="leavePlannerTab" role="tab" aria-selected="false">
-          <span class="tab-icon">🌴</span> Leave Planner & Balance
+          <span class="tab-icon">🌴</span>
+          <span class="tab-text-full">Leave Planner & Balance</span>
+          <span class="tab-text-mobile">Leaves</span>
         </button>
         <button class="tab-btn" data-tab="analyticsTab" role="tab" aria-selected="false">
-          <span class="tab-icon">📊</span> Attendance Summary & Stats
+          <span class="tab-icon">📊</span>
+          <span class="tab-text-full">Attendance Summary & Stats</span>
+          <span class="tab-text-mobile">Stats</span>
         </button>
       </nav>
 

@@ -95,6 +95,13 @@
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-app);
@@ -104,9 +111,18 @@ body {
   min-height: 100vh;
 }
 
+/* Visibility Helpers for Responsive Text */
+.fy-full { display: inline; }
+.fy-compact { display: none; }
+.tab-text-full { display: inline; }
+.tab-text-mobile { display: none; }
+.badge-icon { flex-shrink: 0; }
+.badge-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* Layout */
 .app-layout {
   max-width: 1320px;
+  width: 100%;
   margin: 0 auto;
   padding: 1.25rem 1.5rem 3rem 1.5rem;
 }
@@ -1649,6 +1665,401 @@ body {
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Mobile & Tablet Design */
+@media (max-width: 900px) {
+  .app-layout {
+    padding: 1rem 1rem 3rem 1rem;
+  }
+
+  .top-nav {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-left {
+    order: 1;
+  }
+
+  .nav-right {
+    order: 2;
+  }
+
+  .nav-center {
+    order: 3;
+    width: 100%;
+  }
+
+  .month-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .summary-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .leave-planner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .app-layout {
+    padding: 0.65rem 0.6rem 2.5rem 0.6rem;
+    overflow-x: hidden;
+  }
+
+  /* Top Navigation Bar on Mobile */
+  .top-nav {
+    border-radius: var(--radius-lg);
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.85rem;
+    gap: 0.55rem;
+  }
+
+  .logo {
+    gap: 0.45rem;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.35rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .logo-text h1 {
+    font-size: 1.05rem;
+  }
+
+  .logo-sub {
+    display: none;
+  }
+
+  .nav-right {
+    gap: 0.35rem;
+  }
+
+  .nav-right .btn-sm {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  #planLeaveNavBtn {
+    display: none; /* Hidden on phone header; Leave tab is right below */
+  }
+
+  .month-selector {
+    width: 100%;
+    padding: 0.2rem 0.35rem;
+    gap: 0.2rem;
+  }
+
+  .current-period-display {
+    min-width: auto;
+    font-size: 0.925rem;
+    padding: 0 0.2rem;
+  }
+
+  .fy-full {
+    display: none;
+  }
+
+  .fy-compact {
+    display: inline;
+  }
+
+  .fy-badge {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  /* KPI Summary Cards on Mobile - Full Width Stack */
+  .summary-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .kpi-card {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .kpi-main-number {
+    font-size: 1.95rem;
+  }
+
+  .kpi-category-balances {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+  }
+
+  .kpi-cat-box {
+    padding: 0.45rem 0.55rem;
+  }
+
+  .kpi-cat-val {
+    font-size: 1.15rem;
+  }
+
+  /* Segmented Tabs Bar on Mobile */
+  .main-tabs-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tabs-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    padding: 0.2rem;
+    gap: 0.2rem;
+  }
+
+  .tab-btn {
+    padding: 0.55rem 0.2rem;
+    font-size: 0.75rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .tab-icon {
+    font-size: 0.95rem;
+  }
+
+  .tab-text-full {
+    display: none;
+  }
+
+  .tab-text-mobile {
+    display: inline;
+    font-weight: 600;
+  }
+
+  .calendar-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 0.65rem;
+    font-size: 0.725rem;
+    padding: 0 0.25rem;
+  }
+
+  #batchLogTriggerBtn {
+    margin-top: 0.2rem;
+  }
+
+  /* Calendar on Mobile */
+  .calendar-card {
+    border-radius: var(--radius-lg);
+    width: 100%;
+  }
+
+  .calendar-grid-header .col-head {
+    padding: 0.55rem 0.15rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+  }
+
+  .day-cell {
+    min-height: 58px;
+    height: 60px;
+    padding: 0.22rem 0.15rem;
+    overflow: hidden;
+  }
+
+  .day-header {
+    margin-bottom: 0.15rem;
+  }
+
+  .day-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.725rem;
+    font-weight: 600;
+  }
+
+  .day-status-badge {
+    padding: 2px 3px;
+    font-size: 0.62rem;
+    border-radius: 4px;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    gap: 0.15rem;
+    margin-top: auto;
+  }
+
+  .badge-icon {
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .badge-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .day-note-preview {
+    display: none;
+  }
+
+  /* Batch Log Drawer */
+  .batch-tray-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .batch-tray-inputs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .batch-tray-inputs .input-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .batch-tray-inputs .input-group input,
+  .batch-tray-inputs .input-group select {
+    flex: 1;
+  }
+
+  .batch-tray-inputs .btn {
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  /* Modals on Mobile */
+  .modal-box {
+    width: 95vw;
+    max-width: 440px;
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-lg {
+    width: 96vw;
+    max-width: 580px;
+  }
+
+  .modal-header {
+    margin-bottom: 0.85rem;
+  }
+
+  .quick-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .status-choice-btn {
+    padding: 0.75rem 0.45rem;
+    min-height: 52px;
+  }
+
+  .choice-icon {
+    font-size: 1.45rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .choice-title {
+    font-size: 0.8rem;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  .modal-actions-right {
+    width: 100%;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .modal-actions-right .btn {
+    width: 100%;
+  }
+
+  /* Scrollable Tables on Mobile */
+  .leaves-table-wrapper,
+  .accrual-table-wrap,
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaves-table, .accrual-table, .report-table {
+    min-width: 540px;
+  }
+
+  .filter-pills {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .leave-breakdown-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .logo-text h1 {
+    font-size: 0.95rem;
+  }
+
+  .current-period-display {
+    font-size: 0.85rem;
+  }
+
+  .fy-badge {
+    display: none;
+  }
+
+  .day-cell {
+    min-height: 52px;
+    height: 54px;
+    padding: 0.15rem 0.1rem;
+  }
+
+  .day-status-badge .badge-text {
+    display: none;
+  }
 }
 
 /* Print Styles */

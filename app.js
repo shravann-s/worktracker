@@ -978,26 +978,26 @@
       let badgeHtml = '';
       if (entry) {
         if (entry.status === 'office') {
-          badgeHtml = `<div class="day-status-badge badge-office">🏢 Office</div>`;
+          badgeHtml = `<div class="day-status-badge badge-office"><span class="badge-icon">🏢</span> <span class="badge-text">Office</span></div>`;
         } else if (entry.status === 'wfh') {
-          badgeHtml = `<div class="day-status-badge badge-wfh">🏠 WFH</div>`;
+          badgeHtml = `<div class="day-status-badge badge-wfh"><span class="badge-icon">🏠</span> <span class="badge-text">WFH</span></div>`;
         } else if (entry.status === 'half_office_wfh') {
-          badgeHtml = `<div class="day-status-badge badge-half">🌓 ½ Office + ½ WFH</div>`;
+          badgeHtml = `<div class="day-status-badge badge-half"><span class="badge-icon">🌓</span> <span class="badge-text">½ Off + ½ WFH</span></div>`;
         } else if (entry.status === 'leave') {
           if (entry.leave_type === 'menstrual') {
-            badgeHtml = `<div class="day-status-badge badge-menstrual">🌸 Menstrual</div>`;
+            badgeHtml = `<div class="day-status-badge badge-menstrual"><span class="badge-icon">🌸</span> <span class="badge-text">Menstrual</span></div>`;
           } else {
             const typeName = entry.leave_type ? entry.leave_type.toUpperCase() : 'LEAVE';
-            badgeHtml = `<div class="day-status-badge badge-leave">🌴 ${typeName}</div>`;
+            badgeHtml = `<div class="day-status-badge badge-leave"><span class="badge-icon">🌴</span> <span class="badge-text">${typeName}</span></div>`;
           }
         } else if (entry.status === 'half_leave') {
           if (entry.leave_type === 'menstrual') {
-            badgeHtml = `<div class="day-status-badge badge-menstrual">🌸 ½ Menstrual</div>`;
+            badgeHtml = `<div class="day-status-badge badge-menstrual"><span class="badge-icon">🌸</span> <span class="badge-text">½ Menstrual</span></div>`;
           } else {
-            badgeHtml = `<div class="day-status-badge badge-half">🌓 ½ ${entry.leave_type || 'Leave'}</div>`;
+            badgeHtml = `<div class="day-status-badge badge-half"><span class="badge-icon">🌓</span> <span class="badge-text">½ ${entry.leave_type || 'Leave'}</span></div>`;
           }
         } else if (entry.status === 'holiday') {
-          badgeHtml = `<div class="day-status-badge badge-holiday">🎉 Holiday</div>`;
+          badgeHtml = `<div class="day-status-badge badge-holiday"><span class="badge-icon">🎉</span> <span class="badge-text">Holiday</span></div>`;
         }
 
         if (entry.note) {
@@ -1165,7 +1165,9 @@
 
     const fyInfo = getFyInfo(startMonth, fyYear);
     if (elements.accrualFyBadge) elements.accrualFyBadge.textContent = fyInfo.label;
-    if (elements.navFyBadge) elements.navFyBadge.textContent = `${fyInfo.label} (${fyInfo.sub})`;
+    if (elements.navFyBadge) {
+      elements.navFyBadge.innerHTML = `<span class="fy-full">${escapeHtml(fyInfo.label)} (${escapeHtml(fyInfo.sub)})</span><span class="fy-compact">${escapeHtml(fyInfo.label)}</span>`;
+    }
 
     const fyMonths = getFyMonthsList(startMonth, fyYear);
     const today = state.today;
