@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkTracker - Office, WFH & Leave Planner</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2224%22>🏢</text></svg>">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="logo">
+          <span class="logo-icon">🏢</span>
+          <div class="logo-text">
+            <h1>WorkTracker</h1>
+            <span class="logo-sub">Office & Leave Manager</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-center">
+        <!-- Month Navigation -->
+        <div class="month-selector">
+          <button id="prevMonthBtn" class="btn btn-icon" title="Previous Month" aria-label="Previous Month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="current-period-display">
+            <span id="currentMonthYear">October 2026</span>
+          </div>
+          <button id="nextMonthBtn" class="btn btn-icon" title="Next Month" aria-label="Next Month">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button id="todayBtn" class="btn btn-outline btn-sm">Today</button>
+          <div class="fy-badge" id="navFyBadge" title="Financial Year cycle">FY 2026-27 (Apr–Mar)</div>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <button id="quickLogTodayBtn" class="btn btn-primary btn-sm">
+          <span class="icon">⚡</span> Quick Log
+        </button>
+        <button id="planLeaveNavBtn" class="btn btn-secondary btn-sm">
+          <span class="icon">🌴</span> Plan Leave
+        </button>
+        <button id="settingsBtn" class="btn btn-icon" title="Settings & Quotas" aria-label="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Executive Summary Banner / KPI Cards -->
+    <section class="summary-kpi-grid">
+      <!-- Office Days Card -->
+      <div class="kpi-card kpi-office">
+        <div class="kpi-header">
+          <span class="kpi-label">Office Days (This Month)</span>
+          <span class="kpi-icon-badge office">🏢</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-main-number" id="kpiOfficeCount">0</div>
+          <span class="kpi-subtext" id="kpiOfficeSubtext">/ 0 effective days</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill office-fill" id="kpiOfficeProgress" style="width: 0%"></div>
+        </div>
+        <div class="kpi-target-indicator" id="kpiOfficeCompliance">
+          <span>Target: <b id="kpiTargetPct">60%</b></span>
+          <span id="kpiOfficeStatusBadge" class="status-pill status-pill-neutral">0% achieved</span>
+        </div>
+        <div class="kpi-formula-hint" id="kpiOfficeFormulaHint" style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.45rem;">
+          Effective days after leave(s) is 0 days
+        </div>
+      </div>
+
+      <!-- WFH Days Card -->
+      <div class="kpi-card kpi-wfh">
+        <div class="kpi-header">
+          <span class="kpi-label">Work From Home (WFH)</span>
+          <span class="kpi-icon-badge wfh">🏠</span>
+        </div>
+        <div class="kpi-value-row">
+          <div class="kpi-main-number" id="kpiWfhCount">0</div>
+          <span class="kpi-subtext" id="kpiWfhSubtext">days this month</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill wfh-fill" id="kpiWfhProgress" style="width: 0%"></div>
+        </div>
+        <div class="kpi-meta">
+          <span>Monthly Share: <b id="kpiWfhPct">0%</b></span>
+        </div>
+      </div>
+
+      <!-- Available Leaves Summary Card -->
+      <div class="kpi-card kpi-leaves" id="kpiLeavesCard">
+        <div class="kpi-header">
+          <span class="kpi-label">Available Leave Balances</span>
+          <span class="kpi-icon-badge leaves">🌴</span>
+        </div>
+        <div class="kpi-category-balances" id="kpiCategoryBalances">
+          <!-- Rendered dynamically for each category with quota > 0 -->
+        </div>
+        <div class="kpi-card-footer" style="margin-top: auto; padding-top: 0.45rem; font-size: 0.725rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color);">
+          <span>Active Period: <b id="kpiFyYearText">FY 2026-27</b></span>
+          <button id="viewPlannerFromKpi" class="btn-link-action" style="margin: 0; font-size: 0.725rem;">Leave Planner &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Planned Leaves & Next Off Card -->
+      <div class="kpi-card kpi-upcoming">
+        <div class="kpi-header">
+          <span class="kpi-label">Upcoming Planned Leaves</span>
+          <span class="kpi-icon-badge upcoming">📅</span>
+        </div>
+        <div class="kpi-upcoming-content" id="kpiUpcomingContent">
+          <div class="empty-upcoming">No upcoming leaves scheduled.</div>
+        </div>
+        <button id="viewAllLeavesBtn" class="btn-link-action">View Leave Planner &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <div class="main-tabs-bar">
+      <nav class="tabs-nav" role="tablist">
+        <button class="tab-btn active" data-tab="calendarTab" role="tab" aria-selected="true">
+          <span class="tab-icon">📅</span> Calendar & Logger
+        </button>
+        <button class="tab-btn" data-tab="leavePlannerTab" role="tab" aria-selected="false">
+          <span class="tab-icon">🌴</span> Leave Planner & Balance
+        </button>
+        <button class="tab-btn" data-tab="analyticsTab" role="tab" aria-selected="false">
+          <span class="tab-icon">📊</span> Attendance Summary & Stats
+        </button>
+      </nav>
+
+      <!-- Quick Legend & Controls -->
+      <div class="calendar-legend-bar">
+        <span class="legend-item"><span class="legend-dot office-dot"></span> Office</span>
+        <span class="legend-item"><span class="legend-dot wfh-dot"></span> WFH</span>
+        <span class="legend-item"><span class="legend-dot leave-dot"></span> Leave</span>
+        <span class="legend-item"><span class="legend-dot holiday-dot"></span> Holiday</span>
+        <span class="legend-item"><span class="legend-dot half-dot"></span> Half Day</span>
+        <button id="batchLogTriggerBtn" class="btn btn-outline btn-xs" title="Select multiple dates at once">
+          ✨ Batch Log
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: CALENDAR & LOGGER -->
+    <main class="tab-pane active" id="calendarTab" role="tabpanel">
+      <!-- Batch Log Expandable Tray (hidden by default) -->
+      <div id="batchLogTray" class="batch-tray hidden">
+        <div class="batch-tray-content">
+          <div class="batch-tray-title">
+            <strong>Batch Date Logger</strong>
+            <span>Quickly set multiple days (e.g. whole week or multi-day trip)</span>
+          </div>
+          <div class="batch-tray-inputs">
+            <div class="input-group">
+              <label for="batchStartDate">From:</label>
+              <input type="date" id="batchStartDate" class="form-input">
+            </div>
+            <div class="input-group">
+              <label for="batchEndDate">To:</label>
+              <input type="date" id="batchEndDate" class="form-input">
+            </div>
+            <div class="input-group">
+              <label for="batchStatusSelect">Set As:</label>
+              <select id="batchStatusSelect" class="form-select">
+                <option value="office">🏢 Office</option>
+                <option value="wfh">🏠 Work From Home (WFH)</option>
+                <option value="holiday">🎉 Public Holiday</option>
+                <option value="clear">🗑️ Clear Status</option>
+              </select>
+            </div>
+            <div class="batch-tray-actions">
+              <button id="applyBatchBtn" class="btn btn-primary btn-sm">Apply</button>
+              <button id="closeBatchBtn" class="btn btn-ghost btn-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Calendar Container -->
+      <div class="calendar-card">
+        <div class="calendar-grid-header">
+          <div class="col-head weekend-head">Sun</div>
+          <div class="col-head">Mon</div>
+          <div class="col-head">Tue</div>
+          <div class="col-head">Wed</div>
+          <div class="col-head">Thu</div>
+          <div class="col-head">Fri</div>
+          <div class="col-head weekend-head">Sat</div>
+        </div>
+        <div class="calendar-grid-body" id="calendarGrid">
+          <!-- Calendar cells generated via JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 2: LEAVE PLANNER & AVAILABLE LEAVES SUMMARY -->
+    <main class="tab-pane hidden" id="leavePlannerTab" role="tabpanel">
+      <div class="leave-planner-grid">
+        
+        <!-- Left: Available Leaves Breakdown Dashboard -->
+        <div class="leave-cards-column">
+          <div class="section-title-row">
+            <h2>Available Leaves Summary</h2>
+            <button id="editQuotasBtn" class="btn btn-outline btn-xs">Edit Quotas</button>
+          </div>
+          
+          <!-- Category Quotas Cards -->
+          <div class="leave-breakdown-grid" id="leaveBreakdownGrid">
+            <!-- Dynamically populated by app.js:
+                 - Annual / Earned Leave
+                 - Sick / Medical Leave
+                 - Casual Leave
+                 - Floating / Optional Holidays
+                 - Menstrual Leave
+            -->
+          </div>
+
+          <!-- Dedicated Menstrual Leave Card for Women -->
+          <div class="menstrual-card" id="menstrualCard">
+            <div class="menstrual-card-header">
+              <div class="menstrual-card-title">
+                <span>🌸</span> Menstrual Leave (Monthly Allowance)
+              </div>
+              <span id="menstrualMonthBadge" class="status-pill status-pill-success">1 Day Available</span>
+            </div>
+            <div class="menstrual-status-row">
+              <div class="menstrual-desc" id="menstrualDesc">
+                Women employees are entitled to 1 menstrual leave per month. You have not logged menstrual leave for <strong id="menstrualMonthName">this month</strong>.
+              </div>
+              <button type="button" id="quickLogMenstrualBtn" class="btn btn-outline btn-xs" style="border-color: var(--color-menstrual-border); color: var(--color-menstrual);">
+                🌸 Log for Today
+              </button>
+            </div>
+          </div>
+
+          <!-- Leave Policy Guidelines / Tip Box -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-icon">💡</span>
+              <strong>Leave Tracker Tips</strong>
+            </div>
+            <p>
+              Available leaves update automatically as you plan future leaves or log days on the calendar.
+              Weekend days are automatically excluded from leave deductions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Leave Planner Form & Upcoming Leaves -->
+        <div class="leave-action-column">
+          
+          <!-- Schedule / Apply Leave Form Card -->
+          <div class="card form-card">
+            <div class="card-header">
+              <h3>🌴 Plan / Schedule a Leave</h3>
+              <span class="badge badge-accent">Leave Planner</span>
+            </div>
+            <form id="planLeaveForm" class="leave-form">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="leaveTypeSelect">Leave Category *</label>
+                  <select id="leaveTypeSelect" class="form-select" required>
+                    <option value="annual">🏖️ Annual / Vacation Leave</option>
+                    <option value="sick">🩺 Sick / Medical Leave</option>
+                    <option value="casual">☕ Casual Leave</option>
+                    <option value="optional">⭐ Floating / Optional Holiday</option>
+                    <option value="menstrual">🌸 Menstrual Leave (1 day/mo allowance)</option>
+                    <option value="unpaid">📋 Unpaid / Other Leave</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="leaveDurationMode">Duration *</label>
+                  <select id="leaveDurationMode" class="form-select">
+                    <option value="full">Full Day(s)</option>
+                    <option value="half_morning">Half Day (Morning)</option>
+                    <option value="half_afternoon">Half Day (Afternoon)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="leaveStartDate">Start Date *</label>
+                  <input type="date" id="leaveStartDate" class="form-input" required>
+                </div>
+                <div class="form-group flex-1" id="leaveEndDateGroup">
+                  <label for="leaveEndDate">End Date *</label>
+                  <input type="date" id="leaveEndDate" class="form-input" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="leaveTitleInput">Title / Reason</label>
+                  <input type="text" id="leaveTitleInput" class="form-input" placeholder="e.g. Family vacation, Doctor visit...">
+                </div>
+              </div>
+
+              <!-- Estimated deduction notice -->
+              <div class="form-estimate" id="leaveEstimateNotice">
+                <span>Working days: <strong id="calculatedLeaveDays">1.0</strong> day</span>
+                <span id="leaveQuotaRemainingHint" class="hint-text"></span>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span>📅</span> Add to Leave Plan
+                </button>
+                <button type="reset" class="btn btn-ghost">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Planned Leaves List Card -->
+          <div class="card list-card">
+            <div class="card-header">
+              <h3>Scheduled & Taken Leaves</h3>
+              <div class="filter-pills">
+                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill" data-filter="upcoming">Upcoming</button>
+                <button class="filter-pill" data-filter="past">Past</button>
+              </div>
+            </div>
+            <div class="leaves-table-wrapper">
+              <table class="leaves-table">
+                <thead>
+                  <tr>
+                    <th>Leave / Reason</th>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="plannedLeavesTableBody">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+              <div id="noLeavesPlaceholder" class="empty-state hidden">
+                <p>No leaves planned yet. Use the form above to schedule your time off!</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Monthly Leave Credit & Accrual Tracker Card -->
+      <div class="card accrual-card" id="accrualCard">
+        <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 id="accrualCardTitle">📅 Monthly Leave Credit & Accrual Tracker</h3>
+            <span class="hint-text" id="accrualFormulaSubtext">20 annual leaves ÷ 12 months = 1.67 leaves credited per month</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <div class="accrual-view-switch">
+              <button type="button" class="accrual-switch-btn active" id="accrualViewAnnualBtn">🏖️ Annual Leave</button>
+              <button type="button" class="accrual-switch-btn" id="accrualViewSickBtn">🩺 Sick Leave</button>
+            </div>
+            <span class="badge badge-accent" id="accrualFyBadge">FY 2026-27</span>
+          </div>
+        </div>
+        
+        <div class="accrual-metrics-grid">
+          <div class="accrual-metric-box">
+            <div class="accrual-metric-label" id="accrualMetric1Label">Monthly Credit Rate</div>
+            <div class="accrual-metric-val" id="accrualRateVal">1.67</div>
+            <div class="accrual-metric-sub" id="accrualMetric1Sub">days / month</div>
+          </div>
+          <div class="accrual-metric-box">
+            <div class="accrual-metric-label" id="accrualMetric2Label">Accrued YTD</div>
+            <div class="accrual-metric-val" id="accrualYtdVal">11.67</div>
+            <div class="accrual-metric-sub" id="accrualYtdSub">up to current month</div>
+          </div>
+          <div class="accrual-metric-box">
+            <div class="accrual-metric-label" id="accrualMetric3Label">Annual Leaves Taken</div>
+            <div class="accrual-metric-val" id="accrualTakenVal">2.0</div>
+            <div class="accrual-metric-sub" id="accrualMetric3Sub">in active FY</div>
+          </div>
+          <div class="accrual-metric-box">
+            <div class="accrual-metric-label" id="accrualMetric4Label">Net Available Balance</div>
+            <div class="accrual-metric-val" id="accrualNetBalanceVal" style="color: var(--color-success);">9.67</div>
+            <div class="accrual-metric-sub" id="accrualMetric4Sub">accrued minus taken</div>
+          </div>
+        </div>
+
+        <div class="accrual-table-wrap">
+          <table class="accrual-table">
+            <thead>
+              <tr id="accrualTableHeadRow">
+                <th>Month</th>
+                <th>Credit Added</th>
+                <th>Cumulative Accrued</th>
+                <th>Leaves Taken</th>
+                <th>Net Accrued Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="accrualTableBody">
+              <!-- Injected via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 3: ATTENDANCE SUMMARY & STATS -->
+    <main class="tab-pane hidden" id="analyticsTab" role="tabpanel">
+      <div class="analytics-layout">
+        
+        <!-- Top Stats Row -->
+        <div class="stats-overview-grid">
+          <div class="stat-box">
+            <div class="stat-box-title">Total Working Days</div>
+            <div class="stat-box-num" id="statWorkingDays">0</div>
+            <div class="stat-box-sub">in current month</div>
+          </div>
+          <div class="stat-box office-stat">
+            <div class="stat-box-title">Office Attendance</div>
+            <div class="stat-box-num" id="statOfficeDays">0</div>
+            <div class="stat-box-sub" id="statOfficeRate">0% of working days</div>
+          </div>
+          <div class="stat-box wfh-stat">
+            <div class="stat-box-title">Remote / WFH</div>
+            <div class="stat-box-num" id="statWfhDays">0</div>
+            <div class="stat-box-sub" id="statWfhRate">0% of working days</div>
+          </div>
+          <div class="stat-box leave-stat">
+            <div class="stat-box-title">Leaves Taken</div>
+            <div class="stat-box-num" id="statLeaveDays">0</div>
+            <div class="stat-box-sub" id="statLeaveRate">0% of working days</div>
+          </div>
+        </div>
+
+        <!-- Hybrid Compliance Deep Dive Card -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h3>🏢 Office Presence & Hybrid Policy Target</h3>
+            <button id="printReportBtn" class="btn btn-outline btn-xs">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print / Save Report
+            </button>
+          </div>
+          <div class="compliance-detail">
+            <div class="compliance-meter-container">
+              <div class="compliance-bar-labels">
+                <span>Current Office Rate: <b id="analyticsCurrentRate">0%</b></span>
+                <span>Target: <b id="analyticsTargetRate">60%</b></span>
+              </div>
+              <div class="compliance-track">
+                <div class="compliance-fill" id="analyticsComplianceFill" style="width: 0%"></div>
+                <div class="target-marker" id="analyticsTargetMarker" style="left: 60%" title="Target Line"></div>
+              </div>
+              <div class="compliance-message" id="analyticsComplianceMessage">
+                Log your office days to monitor your hybrid attendance compliance.
+              </div>
+              <div class="formula-box" id="analyticsFormulaBox">
+                <!-- Dynamically rendered by app.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Breakdown Table -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Weekly Attendance Breakdown</h3>
+          </div>
+          <div class="table-container">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Week</th>
+                  <th>Dates</th>
+                  <th>Office</th>
+                  <th>WFH</th>
+                  <th>Leaves</th>
+                  <th>Office %</th>
+                  <th>Compliance Status</th>
+                </tr>
+              </thead>
+              <tbody id="weeklyBreakdownBody">
+                <!-- Injected via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Year-to-Date (YTD) Summary -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Year-to-Date (YTD) Overview</h3>
+            <span class="badge badge-neutral" id="ytdYearLabel">2026</span>
+          </div>
+          <div class="ytd-grid" id="ytdStatsGrid">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Day Quick Log / Edit Modal -->
+  <dialog id="dayModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalDateTitle">21 Oct 2026</h3>
+          <span id="modalDaySubtitle" class="modal-sub">Wednesday</span>
+        </div>
+        <button id="closeModalBtn" class="btn btn-icon btn-sm" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-label">Select status for this day:</p>
+        
+        <div class="quick-status-grid">
+          <button class="status-choice-btn" data-status="office">
+            <span class="choice-icon">🏢</span>
+            <span class="choice-name">Office</span>
+            <span class="choice-desc">Work at office</span>
+          </button>
+          
+          <button class="status-choice-btn" data-status="wfh">
+            <span class="choice-icon">🏠</span>
+            <span class="choice-name">WFH</span>
+            <span class="choice-desc">Work from home</span>
+          </button>
+          
+          <button class="status-choice-btn" data-status="half_office_wfh">
+            <span class="choice-icon">🌓</span>
+            <span class="choice-name">Half & Half</span>
+            <span class="choice-desc">½ Office + ½ WFH</span>
+          </button>
+          
+          <button class="status-choice-btn" data-status="leave">
+            <span class="choice-icon">🌴</span>
+            <span class="choice-name">Leave</span>
+            <span class="choice-desc">Paid/Sick/Casual</span>
+          </button>
+          
+          <button class="status-choice-btn" data-status="holiday">
+            <span class="choice-icon">🎉</span>
+            <span class="choice-name">Holiday</span>
+            <span class="choice-desc">Public / Company</span>
+          </button>
+        </div>
+
+        <!-- Additional Leave Type Dropdown (shown when leave selected) -->
+        <div id="modalLeaveOptions" class="modal-extra-options hidden">
+          <div class="form-group">
+            <label for="modalLeaveTypeSelect">Leave Type:</label>
+            <select id="modalLeaveTypeSelect" class="form-select">
+              <option value="annual">🏖️ Annual / Vacation</option>
+              <option value="sick">🩺 Sick / Medical</option>
+              <option value="casual">☕ Casual Leave</option>
+              <option value="optional">⭐ Floating Holiday</option>
+              <option value="menstrual">🌸 Menstrual Leave (1 day/mo allowance)</option>
+              <option value="unpaid">📋 Unpaid / Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="modalLeaveHalfSelect">Duration:</label>
+            <select id="modalLeaveHalfSelect" class="form-select">
+              <option value="full">Full Day</option>
+              <option value="morning">First Half (0.5 day)</option>
+              <option value="afternoon">Second Half (0.5 day)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Optional Note -->
+        <div class="form-group mt-3">
+          <label for="modalDayNote">Note / Meeting location (optional):</label>
+          <input type="text" id="modalDayNote" class="form-input" placeholder="e.g. Client visit, Team building, Flu...">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modalClearBtn" class="btn btn-ghost text-danger">Clear Status</button>
+        <div class="modal-actions-right">
+          <button id="modalCancelBtn" class="btn btn-outline">Cancel</button>
+          <button id="modalSaveBtn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Settings & Quotas Modal -->
+  <dialog id="settingsModal" class="modal">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3>⚙️ Settings & Leave Quota Balances</h3>
+        <button id="closeSettingsModalBtn" class="btn btn-icon btn-sm" aria-label="Close settings">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <h4 class="settings-subheading">Financial Year (FY) Cycle & Joining Month</h4>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label for="settingFyStartMonth">Organisation FY Cycle:</label>
+            <select id="settingFyStartMonth" class="form-select">
+              <option value="4">April – March (e.g. India, UK, Corporate FY)</option>
+              <option value="1">January – December (Calendar Year)</option>
+              <option value="7">July – June (e.g. Australia, Academic)</option>
+              <option value="10">October – September (e.g. US Federal)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="settingFyYear">Active Financial Year:</label>
+            <input type="number" id="settingFyYear" class="form-input" min="2020" max="2035" value="2026">
+            <span class="hint-text" id="settingFyHint">e.g. FY 2026-27 (Apr 2026 – Mar 2027)</span>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="settingJoiningMonth">Employee Joining Month in this FY (Mid-Year Joining):</label>
+            <select id="settingJoiningMonth" class="form-select">
+              <!-- Populated dynamically via JS: Month 1 (Full Year), Month 2... -->
+            </select>
+            <span class="hint-text" id="settingJoiningHint">Leaves entitled from the month you joined</span>
+          </div>
+        </div>
+
+        <h4 class="settings-subheading mt-4">Leave Quotas & Opening Accrual Balances</h4>
+        <div class="settings-grid">
+          <!-- Annual Leave -->
+          <div class="form-group">
+            <label for="settingAnnualQuota">🏖️ Annual Leave Quota:</label>
+            <input type="number" id="settingAnnualQuota" class="form-input" min="0" max="100" step="0.5" value="20">
+            <span class="hint-text" id="settingAnnualRateHint">1.67 leaves credited per month (20 ÷ 12)</span>
+          </div>
+          <div class="form-group">
+            <label for="settingAnnualOpeningBalance">🏖️ Annual Opening Balance:</label>
+            <input type="number" id="settingAnnualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+          </div>
+
+          <!-- Sick Leave -->
+          <div class="form-group">
+            <label for="settingSickQuota">🩺 Sick Leave Quota:</label>
+            <input type="number" id="settingSickQuota" class="form-input" min="0" max="100" step="0.5" value="10">
+          </div>
+          <div class="form-group">
+            <label for="settingSickOpeningBalance">🩺 Sick Opening Balance:</label>
+            <input type="number" id="settingSickOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+          </div>
+
+          <!-- Casual Leave -->
+          <div class="form-group">
+            <label for="settingCasualQuota">☕ Casual Leave Quota:</label>
+            <input type="number" id="settingCasualQuota" class="form-input" min="0" max="100" step="0.5" value="5">
+          </div>
+          <div class="form-group">
+            <label for="settingCasualOpeningBalance">☕ Casual Opening Balance:</label>
+            <input type="number" id="settingCasualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+          </div>
+
+          <!-- Floating / Optional Leave -->
+          <div class="form-group">
+            <label for="settingOptionalQuota">⭐ Optional Leave Quota:</label>
+            <input type="number" id="settingOptionalQuota" class="form-input" min="0" max="100" step="0.5" value="3">
+          </div>
+          <div class="form-group">
+            <label for="settingOptionalOpeningBalance">⭐ Optional Opening Balance:</label>
+            <input type="number" id="settingOptionalOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+          </div>
+
+          <!-- Menstrual Leave -->
+          <div class="form-group">
+            <label for="settingMenstrualQuota">🌸 Menstrual Leave Allowance:</label>
+            <input type="number" id="settingMenstrualQuota" class="form-input" min="0" max="24" step="1" value="12">
+            <span class="hint-text" id="settingMenstrualHint">1 day available per month (12 days/year)</span>
+          </div>
+          <div class="form-group">
+            <label for="settingMenstrualOpeningBalance">🌸 Menstrual Opening Balance:</label>
+            <input type="number" id="settingMenstrualOpeningBalance" class="form-input" min="0" max="24" step="1" value="0">
+          </div>
+        </div>
+
+        <h4 class="settings-subheading mt-4">Hybrid Attendance Policy Target</h4>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label for="settingOfficeTarget">Office Attendance Goal (% of working days):</label>
+            <div class="input-with-suffix">
+              <input type="number" id="settingOfficeTarget" class="form-input" min="0" max="100" value="60">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="settingYear">Active Tracker Year:</label>
+            <input type="number" id="settingYear" class="form-input" min="2020" max="2035" value="2026">
+          </div>
+        </div>
+
+        <h4 class="settings-subheading mt-4">Data Backup & Migration</h4>
+        <div class="backup-actions-row">
+          <button id="exportDataBtn" class="btn btn-outline btn-sm">
+            <span>💾</span> Export Backup (JSON)
+          </button>
+          <label class="btn btn-outline btn-sm file-input-label">
+            <span>📂</span> Import Backup (JSON)
+            <input type="file" id="importDataInput" accept=".json" style="display: none;">
+          </label>
+          <button id="resetSampleDataBtn" class="btn btn-ghost text-warning btn-sm">
+            <span>✨</span> Load Sample Data
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancelSettingsBtn" class="btn btn-outline">Cancel</button>
+        <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
