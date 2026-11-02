@@ -1580,7 +1580,7 @@
         <div style="font-weight: 700; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
           <span>📐</span> Office % Calculation Breakdown:
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.5rem; margin-top: 0.4rem; font-size: 0.8rem;">
+        <div class="formula-grid">
           <div>• Calendar Working Days (Mon–Fri): <b>${stats.workingDays}</b></div>
           <div>• Public Holidays Deducted: <b>-${stats.holidayCount}</b></div>
           <div>• Leaves Taken Deducted: <b>-${stats.leaveCount}</b></div>
