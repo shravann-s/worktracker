@@ -29,14 +29,16 @@
       target_office_pct: 60,
       work_days_per_week: 5,
       year: new Date().getFullYear().toString(),
-      theme: 'light'
+      theme: 'light',
+      setup_completed: 0
     },
     isServerMode: false,
     selectedDateStr: null,
     activeTab: 'calendarTab',
     selectedModalStatus: 'office',
     leaveFilter: 'all',
-    accrualViewMode: 'annual' // 'annual' or 'sick'
+    accrualViewMode: 'annual', // 'annual' or 'sick'
+    isFirstTimeSetup: false
   };
 
   // Safe Quota Parser (Preserves 0 as a valid quota value!)
@@ -292,6 +294,9 @@
 
     // Settings Modal
     settingsModal: document.getElementById('settingsModal'),
+    settingsModalTitle: document.getElementById('settingsModalTitle'),
+    settingsModalSubtitle: document.getElementById('settingsModalSubtitle'),
+    settingsWelcomeBanner: document.getElementById('settingsWelcomeBanner'),
     closeSettingsModalBtn: document.getElementById('closeSettingsModalBtn'),
     cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
     saveSettingsBtn: document.getElementById('saveSettingsBtn'),
@@ -394,6 +399,7 @@
           state.settings.fy_start_month = parseInt(state.settings.fy_start_month, 10) || 4;
           state.settings.fy_year = parseInt(state.settings.fy_year, 10) || 2026;
           state.settings.target_office_pct = parseQuota(state.settings.target_office_pct, 60);
+        state.settings.setup_completed = parseInt(state.settings.setup_completed, 10) || 0;
         }
       } catch (err) {
         console.error('Error fetching data from server, falling back to localStorage:', err);
@@ -405,6 +411,14 @@
 
     applyTheme(state.settings.theme || 'light');
     renderAll();
+
+    // First-Time Setup Wizard: Prompt settings automatically on first visit
+    const setupDone = localStorage.getItem('wt_setup_completed') === 'true' || state.settings.setup_completed === 1;
+    if (!setupDone) {
+      setTimeout(() => {
+        openSettingsModal(true);
+      }, 350);
+    }
   }
 
   function loadFromLocalStorage() {
@@ -432,6 +446,7 @@
         state.settings.fy_start_month = parseInt(state.settings.fy_start_month, 10) || 4;
         state.settings.fy_year = parseInt(state.settings.fy_year, 10) || 2026;
         state.settings.target_office_pct = parseQuota(state.settings.target_office_pct, 60);
+        state.settings.setup_completed = parseInt(state.settings.setup_completed, 10) || 0;
       }
     } catch (e) {
       console.error('Error reading localStorage:', e);
@@ -2208,8 +2223,10 @@
       });
     }
 
-    // Settings Modal
-    elements.settingsBtn.addEventListener('click', () => {
+    // Settings Modal Open Helper
+    function openSettingsModal(isFirstTime = false) {
+      state.isFirstTimeSetup = isFirstTime;
+
       if (elements.settingFyStartMonth) elements.settingFyStartMonth.value = state.settings.fy_start_month || 4;
       if (elements.settingFyYear) elements.settingFyYear.value = state.settings.fy_year || 2026;
       populateJoiningMonthOptions();
@@ -2227,19 +2244,48 @@
       if (elements.settingMenstrualOpeningBalance) elements.settingMenstrualOpeningBalance.value = state.settings.menstrual_opening_balance !== undefined ? state.settings.menstrual_opening_balance : 0;
 
       updateSettingsHints();
-      elements.settingOfficeTarget.value = state.settings.target_office_pct;
-      elements.settingYear.value = state.settings.year || new Date().getFullYear();
+      if (elements.settingOfficeTarget) elements.settingOfficeTarget.value = state.settings.target_office_pct;
+      if (elements.settingYear) elements.settingYear.value = state.settings.year || new Date().getFullYear();
+
+      if (isFirstTime) {
+        if (elements.settingsModalTitle) elements.settingsModalTitle.textContent = '👋 Welcome! Initial Setup';
+        if (elements.settingsModalSubtitle) elements.settingsModalSubtitle.textContent = 'Configure your organisation cycle and quotas to personalize your tracker';
+        if (elements.settingsWelcomeBanner) elements.settingsWelcomeBanner.classList.remove('hidden');
+        if (elements.saveSettingsBtn) elements.saveSettingsBtn.textContent = 'Complete Setup & Start 🚀';
+        if (elements.cancelSettingsBtn) elements.cancelSettingsBtn.textContent = 'Skip for Now';
+      } else {
+        if (elements.settingsModalTitle) elements.settingsModalTitle.textContent = '⚙️ Settings & Leave Quotas';
+        if (elements.settingsModalSubtitle) elements.settingsModalSubtitle.textContent = 'Configure financial year, joining date, and leave quotas';
+        if (elements.settingsWelcomeBanner) elements.settingsWelcomeBanner.classList.add('hidden');
+        if (elements.saveSettingsBtn) elements.saveSettingsBtn.textContent = 'Save Settings';
+        if (elements.cancelSettingsBtn) elements.cancelSettingsBtn.textContent = 'Cancel';
+      }
+
       elements.settingsModal.showModal();
-    });
+    }
 
-    elements.editQuotasBtn.addEventListener('click', () => {
-      elements.settingsBtn.click();
+    elements.settingsBtn.addEventListener('click', () => openSettingsModal(false));
+    elements.editQuotasBtn.addEventListener('click', () => openSettingsModal(false));
+    elements.closeSettingsModalBtn.addEventListener('click', () => {
+      if (state.isFirstTimeSetup) {
+        localStorage.setItem('wt_setup_completed', 'true');
+        state.settings.setup_completed = 1;
+      }
+      elements.settingsModal.close();
     });
-
-    elements.closeSettingsModalBtn.addEventListener('click', () => elements.settingsModal.close());
-    elements.cancelSettingsBtn.addEventListener('click', () => elements.settingsModal.close());
+    elements.cancelSettingsBtn.addEventListener('click', () => {
+      if (state.isFirstTimeSetup) {
+        localStorage.setItem('wt_setup_completed', 'true');
+        state.settings.setup_completed = 1;
+      }
+      elements.settingsModal.close();
+    });
 
     elements.saveSettingsBtn.addEventListener('click', () => {
+      const wasFirstTime = state.isFirstTimeSetup;
+      state.settings.setup_completed = 1;
+      localStorage.setItem('wt_setup_completed', 'true');
+
       // Fix: parseQuota preserves 0 as a valid quota value without reverting to defaults!
       const newSettings = {
         annual_quota: parseQuota(elements.settingAnnualQuota.value, 20),
@@ -2256,11 +2302,16 @@
         fy_start_month: elements.settingFyStartMonth ? (parseInt(elements.settingFyStartMonth.value, 10) || 4) : 4,
         fy_year: elements.settingFyYear ? (parseInt(elements.settingFyYear.value, 10) || 2026) : 2026,
         target_office_pct: parseQuota(elements.settingOfficeTarget.value, 60),
-        year: elements.settingYear.value.trim()
+        year: elements.settingYear.value.trim(),
+        setup_completed: 1
       };
       persistSettings(newSettings);
       elements.settingsModal.close();
-      showToast('Settings saved successfully!', '⚙️');
+      if (wasFirstTime) {
+        showToast('🎉 Setup complete! Welcome to WorkTracker.', '🚀');
+      } else {
+        showToast('Settings saved successfully!', '⚙️');
+      }
     });
 
     // Export Data

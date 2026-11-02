@@ -615,118 +615,228 @@
   <dialog id="settingsModal" class="modal">
     <div class="modal-box modal-lg">
       <div class="modal-header">
-        <h3>⚙️ Settings & Leave Quota Balances</h3>
+        <div>
+          <h3 id="settingsModalTitle">⚙️ Settings & Leave Quotas</h3>
+          <span id="settingsModalSubtitle" class="modal-sub">Configure financial year, joining date, and leave quotas</span>
+        </div>
         <button id="closeSettingsModalBtn" class="btn btn-icon btn-sm" aria-label="Close settings">&times;</button>
       </div>
 
       <div class="modal-body">
-        <h4 class="settings-subheading">Financial Year (FY) Cycle & Joining Month</h4>
-        <div class="settings-grid">
-          <div class="form-group">
-            <label for="settingFyStartMonth">Organisation FY Cycle:</label>
-            <select id="settingFyStartMonth" class="form-select">
-              <option value="4">April – March (e.g. India, UK, Corporate FY)</option>
-              <option value="1">January – December (Calendar Year)</option>
-              <option value="7">July – June (e.g. Australia, Academic)</option>
-              <option value="10">October – September (e.g. US Federal)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="settingFyYear">Active Financial Year:</label>
-            <input type="number" id="settingFyYear" class="form-input" min="2020" max="2035" value="2026">
-            <span class="hint-text" id="settingFyHint">e.g. FY 2026-27 (Apr 2026 – Mar 2027)</span>
-          </div>
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="settingJoiningMonth">Employee Joining Month in this FY (Mid-Year Joining):</label>
-            <select id="settingJoiningMonth" class="form-select">
-              <!-- Populated dynamically via JS: Month 1 (Full Year), Month 2... -->
-            </select>
-            <span class="hint-text" id="settingJoiningHint">Leaves entitled from the month you joined</span>
-          </div>
+        <!-- First-Time Welcome Banner (shown only on initial setup) -->
+        <div id="settingsWelcomeBanner" class="welcome-setup-banner hidden">
+          <div class="welcome-banner-badge">👋 Welcome to WorkTracker!</div>
+          <p class="welcome-banner-text">
+            Configure your organisation's financial year and leave quotas to get started. You can update any of these settings anytime from the <strong>⚙️ Settings</strong> button.
+          </p>
         </div>
 
-        <h4 class="settings-subheading mt-4">Leave Quotas & Opening Accrual Balances</h4>
-        <div class="settings-grid">
-          <!-- Annual Leave -->
-          <div class="form-group">
-            <label for="settingAnnualQuota">🏖️ Annual Leave Quota:</label>
-            <input type="number" id="settingAnnualQuota" class="form-input" min="0" max="100" step="0.5" value="20">
-            <span class="hint-text" id="settingAnnualRateHint">1.67 leaves credited per month (20 ÷ 12)</span>
-          </div>
-          <div class="form-group">
-            <label for="settingAnnualOpeningBalance">🏖️ Annual Opening Balance:</label>
-            <input type="number" id="settingAnnualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
-          </div>
-
-          <!-- Sick Leave -->
-          <div class="form-group">
-            <label for="settingSickQuota">🩺 Sick Leave Quota:</label>
-            <input type="number" id="settingSickQuota" class="form-input" min="0" max="100" step="0.5" value="10">
-          </div>
-          <div class="form-group">
-            <label for="settingSickOpeningBalance">🩺 Sick Opening Balance:</label>
-            <input type="number" id="settingSickOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
-          </div>
-
-          <!-- Casual Leave -->
-          <div class="form-group">
-            <label for="settingCasualQuota">☕ Casual Leave Quota:</label>
-            <input type="number" id="settingCasualQuota" class="form-input" min="0" max="100" step="0.5" value="5">
-          </div>
-          <div class="form-group">
-            <label for="settingCasualOpeningBalance">☕ Casual Opening Balance:</label>
-            <input type="number" id="settingCasualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
-          </div>
-
-          <!-- Floating / Optional Leave -->
-          <div class="form-group">
-            <label for="settingOptionalQuota">⭐ Optional Leave Quota:</label>
-            <input type="number" id="settingOptionalQuota" class="form-input" min="0" max="100" step="0.5" value="3">
-          </div>
-          <div class="form-group">
-            <label for="settingOptionalOpeningBalance">⭐ Optional Opening Balance:</label>
-            <input type="number" id="settingOptionalOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
-          </div>
-
-          <!-- Menstrual Leave -->
-          <div class="form-group">
-            <label for="settingMenstrualQuota">🌸 Menstrual Leave Allowance:</label>
-            <input type="number" id="settingMenstrualQuota" class="form-input" min="0" max="24" step="1" value="12">
-            <span class="hint-text" id="settingMenstrualHint">1 day available per month (12 days/year)</span>
-          </div>
-          <div class="form-group">
-            <label for="settingMenstrualOpeningBalance">🌸 Menstrual Opening Balance:</label>
-            <input type="number" id="settingMenstrualOpeningBalance" class="form-input" min="0" max="24" step="1" value="0">
-          </div>
-        </div>
-
-        <h4 class="settings-subheading mt-4">Hybrid Attendance Policy Target</h4>
-        <div class="settings-grid">
-          <div class="form-group">
-            <label for="settingOfficeTarget">Office Attendance Goal (% of working days):</label>
-            <div class="input-with-suffix">
-              <input type="number" id="settingOfficeTarget" class="form-input" min="0" max="100" value="60">
-              <span class="suffix">%</span>
+        <!-- Section 1: Financial Year & Joining Month -->
+        <div class="settings-section">
+          <h4 class="settings-subheading">📅 Financial Year (FY) Cycle & Joining Month</h4>
+          <div class="settings-fy-grid">
+            <div class="form-group">
+              <label for="settingFyStartMonth">Organisation FY Cycle:</label>
+              <select id="settingFyStartMonth" class="form-select">
+                <option value="4">April – March (e.g. India, UK, Corporate FY)</option>
+                <option value="1">January – December (Calendar Year)</option>
+                <option value="7">July – June (e.g. Australia, Academic)</option>
+                <option value="10">October – September (e.g. US Federal)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="settingFyYear">Active Financial Year:</label>
+              <input type="number" id="settingFyYear" class="form-input" min="2020" max="2035" value="2026">
+              <span class="hint-text" id="settingFyHint">e.g. FY 2026-27 (Apr 2026 – Mar 2027)</span>
+            </div>
+            <div class="form-group full-width-field">
+              <label for="settingJoiningMonth">Employee Joining Month in this FY (Mid-Year Joining):</label>
+              <select id="settingJoiningMonth" class="form-select">
+                <!-- Populated dynamically via JS: Month 1 (Full Year), Month 2... -->
+              </select>
+              <span class="hint-text" id="settingJoiningHint">Leaves entitled from the month you joined</span>
             </div>
           </div>
-          <div class="form-group">
-            <label for="settingYear">Active Tracker Year:</label>
-            <input type="number" id="settingYear" class="form-input" min="2020" max="2035" value="2026">
+        </div>
+
+        <!-- Section 2: Leave Quotas & Opening Balances -->
+        <div class="settings-section">
+          <div class="section-title-wrap">
+            <h4 class="settings-subheading">🌴 Leave Quotas & Opening Accrual Balances</h4>
+            <span class="section-subtext">Set your annual entitlement and any carried-over opening balance from the start of the year</span>
+          </div>
+
+          <div class="quota-cards-list">
+            <!-- Annual Leave -->
+            <div class="quota-setting-card">
+              <div class="quota-card-header">
+                <div class="quota-card-title">
+                  <span class="quota-icon">🏖️</span>
+                  <strong>Annual Leave</strong>
+                </div>
+                <span class="quota-tag quota-tag-primary">Credited monthly</span>
+              </div>
+              <div class="quota-inputs-row">
+                <div class="form-group">
+                  <label for="settingAnnualQuota">Yearly Quota</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingAnnualQuota" class="form-input" min="0" max="100" step="0.5" value="20">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="settingAnnualOpeningBalance">Opening Balance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingAnnualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+              </div>
+              <div class="quota-card-hint" id="settingAnnualRateHint">1.67 leaves credited per month (20 ÷ 12)</div>
+            </div>
+
+            <!-- Sick Leave -->
+            <div class="quota-setting-card">
+              <div class="quota-card-header">
+                <div class="quota-card-title">
+                  <span class="quota-icon">🩺</span>
+                  <strong>Sick Leave</strong>
+                </div>
+                <span class="quota-tag quota-tag-neutral">Upfront credit</span>
+              </div>
+              <div class="quota-inputs-row">
+                <div class="form-group">
+                  <label for="settingSickQuota">Yearly Quota</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingSickQuota" class="form-input" min="0" max="100" step="0.5" value="10">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="settingSickOpeningBalance">Opening Balance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingSickOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Casual Leave -->
+            <div class="quota-setting-card">
+              <div class="quota-card-header">
+                <div class="quota-card-title">
+                  <span class="quota-icon">☕</span>
+                  <strong>Casual Leave</strong>
+                </div>
+              </div>
+              <div class="quota-inputs-row">
+                <div class="form-group">
+                  <label for="settingCasualQuota">Yearly Quota</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingCasualQuota" class="form-input" min="0" max="100" step="0.5" value="5">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="settingCasualOpeningBalance">Opening Balance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingCasualOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Optional Leave -->
+            <div class="quota-setting-card">
+              <div class="quota-card-header">
+                <div class="quota-card-title">
+                  <span class="quota-icon">⭐</span>
+                  <strong>Optional / Floating Leave</strong>
+                </div>
+              </div>
+              <div class="quota-inputs-row">
+                <div class="form-group">
+                  <label for="settingOptionalQuota">Yearly Quota</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingOptionalQuota" class="form-input" min="0" max="100" step="0.5" value="3">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="settingOptionalOpeningBalance">Opening Balance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingOptionalOpeningBalance" class="form-input" min="0" max="100" step="0.5" value="0">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Menstrual Leave -->
+            <div class="quota-setting-card">
+              <div class="quota-card-header">
+                <div class="quota-card-title">
+                  <span class="quota-icon">🌸</span>
+                  <strong>Menstrual Leave</strong>
+                </div>
+                <span class="quota-tag quota-tag-pink">Monthly allowance</span>
+              </div>
+              <div class="quota-inputs-row">
+                <div class="form-group">
+                  <label for="settingMenstrualQuota">Annual Allowance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingMenstrualQuota" class="form-input" min="0" max="24" step="1" value="12">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="settingMenstrualOpeningBalance">Opening Balance</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="settingMenstrualOpeningBalance" class="form-input" min="0" max="24" step="1" value="0">
+                    <span class="input-unit">days</span>
+                  </div>
+                </div>
+              </div>
+              <div class="quota-card-hint" id="settingMenstrualHint">1 day available per month (12 days/year)</div>
+            </div>
           </div>
         </div>
 
-        <h4 class="settings-subheading mt-4">Data Backup & Migration</h4>
-        <div class="backup-actions-row">
-          <button id="exportDataBtn" class="btn btn-outline btn-sm">
-            <span>💾</span> Export Backup (JSON)
-          </button>
-          <label class="btn btn-outline btn-sm file-input-label">
-            <span>📂</span> Import Backup (JSON)
-            <input type="file" id="importDataInput" accept=".json" style="display: none;">
-          </label>
-          <button id="resetSampleDataBtn" class="btn btn-ghost text-warning btn-sm">
-            <span>✨</span> Load Sample Data
-          </button>
+        <!-- Section 3: Attendance Goal -->
+        <div class="settings-section">
+          <h4 class="settings-subheading">🏢 Hybrid Attendance Policy Target</h4>
+          <div class="settings-fy-grid">
+            <div class="form-group">
+              <label for="settingOfficeTarget">Office Attendance Goal (% of working days):</label>
+              <div class="input-with-suffix">
+                <input type="number" id="settingOfficeTarget" class="form-input" min="0" max="100" value="60">
+                <span class="suffix">%</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="settingYear">Active Tracker Year:</label>
+              <input type="number" id="settingYear" class="form-input" min="2020" max="2035" value="2026">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Data Backup & Migration -->
+        <div class="settings-section" id="settingsBackupSection">
+          <h4 class="settings-subheading">💾 Data Backup & Migration</h4>
+          <div class="backup-actions-row">
+            <button id="exportDataBtn" class="btn btn-outline btn-sm">
+              <span>💾</span> Export Backup (JSON)
+            </button>
+            <label class="btn btn-outline btn-sm file-input-label">
+              <span>📂</span> Import Backup (JSON)
+              <input type="file" id="importDataInput" accept=".json" style="display: none;">
+            </label>
+            <button id="resetSampleDataBtn" class="btn btn-ghost text-warning btn-sm">
+              <span>✨</span> Load Sample Data
+            </button>
+          </div>
         </div>
       </div>
 
